@@ -1,46 +1,45 @@
-import React from "react";
-import { useState } from "react";
-import ProductsData from "./component/data";
-import Card from "./component/card";
+import React, { useState } from "react";
 import "./shopping.module.css";
+import ProductItem from "./component/card";
+import ProductsData from "./component/data";
 
 const ShoppingCard = () => {
-  const [product, setProduct] = useState(
-    ProductsData.map((item) => {
+  const [products, setProduct] = useState(
+    ProductsData.map((product) => {
       return {
-        ...item,
+        ...product,
         quantity: 0,
         total: 0,
       };
     })
   );
 
-  const incrementItem = (id) => {
-    const newProduct = product.map(item => {
-      if(item.id === id && item.stock > item.quantity){
-        item.quantity++
-        item.total = item.quantity * item.price
+  const incrementQuantity = (id) => {
+    const newProduct = products.map((product) => {
+      if (product.id === id && product.stock > 0) {
+        product.quantity++;
+        product.stock--;
+        product.total = product.quantity * product.price;
       }
-      return item
-    })
+      return product;
+    });
+    setProduct(newProduct);
+  };
 
-    setProduct(newProduct)
-  }
-
-  const decrementItem = (id) => {
-    const newItem = product.map(item => {
-      if(item.id === id && item.quantity > 0){
-        item.quantity--
-        item.total = item.quantity * item.price
+  const decrementQuantity = (id) => {
+    const newProduct = products.map((product) => {
+      if (product.id === id && product.quantity > 0) {
+        product.quantity--;
+        product.stock++;
+        product.total = product.quantity * product.price;
       }
-      return item
-    })
-
-    setProduct(newItem)
-  }
+      return product;
+    });
+    setProduct(newProduct);
+  };
 
   return (
-    <div style={{ width: "50%", margin: "auto" }}>
+    <div>
       <table>
         <thead>
           <tr>
@@ -54,8 +53,13 @@ const ShoppingCard = () => {
           </tr>
         </thead>
         <tbody>
-          {product.map((product) => (
-            <Card key={product.id} {...product} increment={incrementItem} decrement={decrementItem}/>
+          {products.map((item) => (
+            <ProductItem
+              key={item.id}
+              {...item}
+              increment={incrementQuantity}
+              decrement={decrementQuantity}
+            />
           ))}
         </tbody>
       </table>
